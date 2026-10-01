@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Challenge 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(225,6,0,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(0,100,255,0.12) 0%, transparent 50%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .header {
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    border-bottom: 2px solid #e10600;
+    z-index: 100;
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .logo {
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #e10600, #ff6b00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: #e10600; }
+
+  .hero {
+    padding: 4rem 2rem 2rem;
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    background: rgba(225,6,0,0.15);
+    border: 1px solid #e10600;
+    border-radius: 50px;
+    color: #ff6b00;
+    font-weight: 700;
+    letter-spacing: 3px;
+    font-size: 0.8rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #e10600 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    font-size: 1.1rem;
+    color: #bbb;
+    line-height: 1.6;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .hero p strong { color: #e10600; }
+
+  .stages-preview {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+  .stage-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #2a2a2a;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: #aaa;
+  }
+
+  .game-section {
+    padding: 2rem 2rem 5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    text-align: center;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    letter-spacing: -1px;
+  }
+  .section-title span { color: #e10600; }
+
+  .stages-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .stage-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: #1a1a1a;
+    border: 2px solid #2a2a2a;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    transition: all 0.3s;
+  }
+  .stage-chip.active {
+    border-color: #e10600;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(225,6,0,0.4);
+  }
+  .stage-chip.done {
+    border-color: #00d26a;
+    color: #00d26a;
+  }
+  .stage-chip.done::before {
+    content: '✓';
+    font-weight: 900;
+  }
+
+  .game-card {
+    background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .game-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #e10600, #ff6b00, #e10600);
+    background-size: 200% 100%;
+    animation: gradientShift 3s linear infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    text-align: center;
+    padding: 0.6rem 1.2rem;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    min-width: 90px;
+  }
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #e10600;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 0.3rem;
+  }
+
+  .progress-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .progress-dot {
+    width: 60px;
+    height: 6px;
+    background: #2a2a2a;
+    border-radius: 3px;
+    transition: all 0.3s;
+  }
+  .progress-dot.active {
+    background: #e10600;
+    box-shadow: 0 0 15px rgba(225,6,0,0.8);
+  }
+  .progress-dot.wrong { background: #444; }
+  .progress-dot.correct {
+    background: #00d26a;
+    box-shadow: 0 0 15px rgba(0,210,106,0.8);
+  }
+
+  .attempts-info {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #999;
+    font-size: 1rem;
+  }
+  .attempts-info strong { color: #e10600; font-size: 1.15rem; }
+
+  .inputs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .input-label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #999;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    font-size: 1.2rem;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .game-input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3.2rem;
+    background: #0a0a0a;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .game-input:focus {
+    outline: none;
+    border-color: #e10600;
+    box-shadow: 0 0 20px rgba(225,6,0,0.3);
+  }
+  .game-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 2px solid #e10600;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  .autocomplete.show { display: block; }
+  .autocomplete-item {
+    padding: 0.7rem 1rem 0.7rem 3.2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+  }
+  .autocomplete-item:hover { background: #e10600; }
+
+  .guess-btn {
+    width: 100%;
+    padding: 1.1rem;
+    background: linear-gradient(135deg, #e10600, #ff1a0e);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .guess-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(225,6,0,0.5);
+  }
+  .guess-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .feedback { margin-top: 1.5rem; }
+  .feedback-card {
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    border-left: 4px solid;
+    background: #0a0a0a;
+    margin-bottom: 0.8rem;
+    animation: fadeIn 0.4s;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .feedback-card.correct {
+    border-color: #00d26a;
+    background: rgba(0,210,106,0.08);
+  }
+  .feedback-card.wrong {
+    border-color: #e10600;
+    background: rgba(225,6,0,0.08);
+  }
+  .feedback-card.hint {
+    border-color: #ffb800;
+    background: rgba(255,184,0,0.08);
+  }
+  .feedback-title {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+  }
+  .feedback-text {
+    color: #ccc;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .feedback-text strong { color: #fff; }
+
+  /* ====== STAGE 2: CORRIDA ====== */
+  #raceCanvas {
+    display: block;
+    margin: 0 auto;
+    background: #1a1a1a;
+    border: 2px solid #e10600;
+    border-radius: 12px;
+    max-width: 100%;
+    cursor: none;
+    touch-action: none;
+  }
+  .race-instructions {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+  .race-instructions strong { color: #e10600; }
+
+  .race-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;
+    border-radius: 12px;
+    text-align: center;
+    padding: 2rem;
+  }
+  .race-overlay.show { display: flex; }
+  .race-overlay-title {
+    font-size: 2rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: #e10600;
+  }
+  .race-overlay-text {
+    color: #ccc;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .race-wrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ====== STAGE 3: QUIZ ====== */
+  .quiz-timer {
+    font-size: 2rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #e10600;
+    text-align: center;
+    padding: 0.5rem 1.5rem;
+    background: #1a1a1a;
+    border: 2px solid #e10600;
+    border-radius: 12px;
+    min-width: 100px;
+    margin: 0 auto 1.5rem;
+    display: block;
+    width: fit-content;
+    transition: all 0.3s;
+  }
+  .quiz-timer.warning {
+    color: #ff6b00;
+    border-color: #ff6b00;
+    animation: pulse 0.5s infinite;
+  }
+  .quiz-timer.danger {
+    color: #fff;
+    background: #e10600;
+    border-color: #e10600;
+    animation: pulse 0.3s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .quiz-question {
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+    padding: 1.5rem;
+    background: #0a0a0a;
+    border-radius: 12px;
+    border: 1px solid #2a2a2a;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 600px) {
+    .quiz-options { grid-template-columns: 1fr; }
+  }
+
+  .quiz-option {
+    padding: 1.2rem;
+    background: #0a0a0a;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    text-align: left;
+  }
+  .quiz-option:hover:not(:disabled) {
+    border-color: #e10600;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(225,6,0,0.3);
+  }
+  .quiz-option:disabled { cursor: not-allowed; }
+  .quiz-option.correct {
+    background: rgba(0,210,106,0.15);
+    border-color: #00d26a;
+    color: #00d26a;
+  }
+  .quiz-option.wrong {
+    background: rgba(225,6,0,0.15);
+    border-color: #e10600;
+    color: #e10600;
+    opacity: 0.6;
+  }
+
+  .quiz-score-info {
+    text-align: center;
+    color: #999;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  .quiz-score-info strong { color: #fff; }
+
+  .result-container {
+    display: none;
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+  .result-container.show {
+    display: block;
+    animation: fadeIn 0.5s;
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 0.8rem; }
+  .result-title {
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .result-title.win { color: #00d26a; }
+  .result-title.lose { color: #e10600; }
+  .result-text {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .result-answer {
+    background: #1a1a1a;
+    border: 2px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  .result-answer-label {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.4rem;
+  }
+  .result-answer-value {
+    font-size: 1.4rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #e10600;
+  }
+  .result-answer-team {
+    font-size: 1rem;
+    color: #ff6b00;
+    margin-top: 0.3rem;
+    font-weight: 600;
+  }
+  .result-details {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .detail-chip {
+    padding: 0.4rem 0.9rem;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: #ccc;
+  }
+  .detail-chip strong { color: #fff; }
+
+  .next-btn {
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, #e10600, #ff1a0e);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+  .next-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(225,6,0,0.5);
+  }
+
+  .phase-transition {
+    display: none;
+    text-align: center;
+    padding: 2rem 0;
+  }
+  .phase-transition.show {
+    display: block;
+    animation: fadeIn 0.5s;
+  }
+  .phase-transition-emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounce 1s ease infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+  }
+  .phase-transition-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    color: #ff6b00;
+    margin-bottom: 0.8rem;
+  }
+  .phase-transition-text {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .how-to-play {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #1a1a1a;
+    border-radius: 15px;
+    border: 1px solid #2a2a2a;
+  }
+  .how-to-play h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #e10600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .how-to-play ol {
+    padding-left: 1.5rem;
+    color: #ccc;
+    line-height: 1.8;
+    font-size: 0.95rem;
+  }
+  .how-to-play li { margin-bottom: 0.4rem; }
+  .how-to-play strong { color: #e10600; }
+
+  .footer {
+    padding: 2rem;
+    text-align: center;
+    border-top: 1px solid #1a1a1a;
+    color: #666;
+    font-size: 0.85rem;
+  }
+  .footer strong { color: #e10600; }
+
+  .flags-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 60;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .flags-overlay.show { opacity: 1; }
+
+  .flag {
+    position: absolute;
+    width: 120px;
+    height: 80px;
+    background:
+      linear-gradient(45deg, #000 25%, transparent 25%) 0 0 / 40px 40px,
+      linear-gradient(-45deg, #000 25%, transparent 25%) 0 20px / 40px 40px,
+      linear-gradient(45deg, transparent 75%, #000 75%) 20px -20px / 40px 40px,
+      linear-gradient(-45deg, transparent 75%, #000 75%) -20px 0 / 40px 40px;
+    background-color: #fff;
+    border: 3px solid #000;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.4);
+    opacity: 0;
+    animation: flagFly 3s ease-in-out forwards;
+  }
+  @keyframes flagFly {
+    0% { opacity: 0; transform: translateX(-200px) rotate(-20deg) scale(0.5); }
+    15% { opacity: 1; transform: translateX(10vw) rotate(-15deg) scale(1.1); }
+    30% { transform: translateX(30vw) rotate(-5deg) scale(1); }
+    50% { transform: translateX(50vw) rotate(5deg) scale(1.1); }
+    70% { transform: translateX(70vw) rotate(10deg) scale(1); }
+    85% { opacity: 1; transform: translateX(90vw) rotate(20deg) scale(1.1); }
+    100% { opacity: 0; transform: translateX(110vw) rotate(30deg) scale(0.8); }
+  }
+
+  .confetti {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    animation: confettiFall 3s linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { opacity: 1; transform: translateY(-100px) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
+  }
+
+  .success-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0,210,106,0.4), transparent 70%);
+    pointer-events: none;
+    z-index: 55;
+    opacity: 0;
+    animation: successFlash 1s ease-out;
+  }
+  @keyframes successFlash {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .game-card { padding: 1.2rem; }
+    .progress-dot { width: 40px; }
+    .stat-item { min-width: 75px; padding: 0.5rem 0.8rem; }
+    .stat-value { font-size: 1.3rem; }
+    .flag { width: 80px; height: 55px; }
+    .stage-chip { padding: 0.4rem 0.9rem; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <nav class="nav">
+    <div class="logo">🏎️ F1 CHALLENGE</div>
+    <ul class="nav-links">
+      <li><a href="#home">Início</a></li>
+      <li><a href="#game">Jogar</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero" id="home">
+  <div class="hero-badge">🏁 Desafio em 3 Estágios</div>
+  <h1>F1 Challenge 2026</h1>
+  <p>Três desafios para provar que você é um verdadeiro fã de Fórmula 1. Passe por todos e se torne um <strong>Campeão Mundial</strong>!</p>
+  <div class="stages-preview">
+    <div class="stage-preview-item">🎯 Adivinhe o Piloto</div>
+    <div class="stage-preview-item">🏎️ Corrida de Reflexo</div>
+    <div class="stage-preview-item">⚡ Quiz Relâmpago</div>
+  </div>
+</section>
+
+<section class="game-section" id="game">
+  <h2 class="section-title">O <span>Desafio</span></h2>
+
+  <div class="stages-bar">
+    <div class="stage-chip active" id="chip1">🎯 Piloto</div>
+    <div class="stage-chip" id="chip2">🏎️ Corrida</div>
+    <div class="stage-chip" id="chip3">⚡ Quiz</div>
+  </div>
+
+  <div class="game-card">
+    <div class="stats-container">
+      <div class="stat-item">
+        <div class="stat-value" id="statAttempts">0</div>
+        <div class="stat-label">Tentativas</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statCorrect">0</div>
+        <div class="stat-label">Acertos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statScore">0</div>
+        <div class="stat-label">Pontos</div>
+      </div>
+    </div>
+
+    <!-- ESTÁGIO 1 -->
+    <div id="stage1">
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+      </div>
+
+      <div class="attempts-info">
+        Tentativa <strong id="currentAttempt">1</strong> de <strong>4</strong>
+      </div>
+
+      <div class="inputs-container" id="inputsContainer">
+        <div>
+          <label class="input-label">🏁 Piloto</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input type="text" class="game-input" id="pilotInput" placeholder="Digite o nome do piloto..." autocomplete="off">
+            <div class="autocomplete" id="pilotAutocomplete"></div>
+          </div>
+        </div>
+
+        <div>
+          <label class="input-label">🏆 Equipe</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏎️</span>
+            <input type="text" class="game-input" id="teamInput" placeholder="Digite o nome da equipe..." autocomplete="off">
+            <div class="autocomplete" id="teamAutocomplete"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="guess-btn" id="guessBtn">🏁 Enviar Palpite</button>
+
+      <div class="feedback" id="feedback"></div>
+      <div class="result-container" id="resultContainer"></div>
+      <div class="phase-transition" id="stage1Transition"></div>
+    </div>
+
+    <!-- ESTÁGIO 2 -->
+    <div id="stage2" style="display:none;">
+      <div class="race-wrapper">
+        <canvas id="raceCanvas" width="700" height="500"></canvas>
+        <div class="race-overlay" id="raceOverlay">
+          <div class="race-overlay-title" id="raceOverlayTitle">🏎️ Corrida de Reflexo</div>
+          <div class="race-overlay-text" id="raceOverlayText">
+            Use as <strong>setas ← →</strong> ou o <strong>mouse</strong> para desviar dos cones e chegar à linha de chegada!<br>
+            Você tem <strong>3 vidas</strong>.
+          </div>
+          <button class="next-btn" id="raceStartBtn">🏁 Iniciar Corrida</button>
+        </div>
+      </div>
+      <div class="race-instructions">
+        🏁 Desvie dos <strong>cones vermelhos</strong> e colete os <strong>trofeus dourados</strong> para ganhar pontos!
+      </div>
+    </div>
+
+    <!-- ESTÁGIO 3 -->
+    <div id="stage3" style="display:none;">
+      <div class="quiz-timer" id="quizTimer">15</div>
+      <div class="quiz-score-info">
+        Pergunta <strong id="quizCurrent">1</strong> de <strong>5</strong> • Acertos: <strong id="quizScore">0</strong>
+      </div>
+      <div class="quiz-question" id="quizQuestion">Carregando...</div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="feedback" id="quizFeedback"></div>
+      <div class="result-container" id="quizResult"></div>
+    </div>
+
+  </div>
+
+  <div class="how-to-play">
+    <h3>📖 Como Jogar</h3>
+    <ol>
+      <li><strong>🎯 Estágio 1 - Adivinhe o Piloto:</strong> descubra o piloto e a equipe em 4 tentativas. Acerte <strong>2 vezes</strong> para passar.</li>
+      <li><strong>🏎️ Estágio 2 - Corrida de Reflexo:</strong> desvie dos obstáculos e chegue ao fim com pelo menos 1 vida.</li>
+      <li><strong>⚡ Estágio 3 - Quiz Relâmpago:</strong> responda 5 perguntas em 15 segundos cada. Acerte <strong>3 ou mais</strong> para ser campeão!</li>
+    </ol>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>🏎️ <strong>F1 Challenge 2026</strong> - Três desafios, um campeão</p>
+  <p style="margin-top:0.4rem;">Boa sorte, piloto! 🏁</p>
+</footer>
+
+<div class="flags-overlay" id="flagsOverlay"></div>
+
+<script>
+/* ============ GRID F1 2026 ============ */
+const PILOTS = [
+  { name: "Max Verstappen", team: "Red Bull Racing", nationality: "Holandês", number: 3 },
+  { name: "Isack Hadjar", team: "Red Bull Racing", nationality: "Francês", number: 6 },
+  { name: "George Russell", team: "Mercedes", nationality: "Britânico", number: 63 },
+  { name: "Kimi Antonelli", team: "Mercedes", nationality: "Italiano", number: 12 },
+  { name: "Charles Leclerc", team: "Ferrari", nationality: "Monegasco", number: 16 },
+  { name: "Lewis Hamilton", team: "Ferrari", nationality: "Britânico", number: 44 },
+  { name: "Lando Norris", team: "McLaren", nationality: "Britânico", number: 1 },
+  { name: "Oscar Piastri", team: "McLaren", nationality: "Australiano", number: 81 },
+  { name: "Fernando Alonso", team: "Aston Martin", nationality: "Espanhol", number: 14 },
+  { name: "Lance Stroll", team: "Aston Martin", nationality: "Canadense", number: 18 },
+  { name: "Pierre Gasly", team: "Alpine", nationality: "Francês", number: 10 },
+  { name: "Franco Colapinto", team: "Alpine", nationality: "Argentino", number: 43 },
+  { name: "Esteban Ocon", team: "Haas", nationality: "Francês", number: 31 },
+  { name: "Oliver Bearman", team: "Haas", nationality: "Britânico", number: 87 },
+  { name: "Gabriel Bortoleto", team: "Audi", nationality: "Brasileiro", number: 5 },
+  { name: "Nico Hulkenberg", team: "Audi", nationality: "Alemão", number: 27 },
+  { name: "Sergio Perez", team: "Cadillac", nationality: "Mexicano", number: 11 },
+  { name: "Valtteri Bottas", team: "Cadillac", nationality: "Finlandês", number: 77 },
+  { name: "Alexander Albon", team: "Williams", nationality: "Tailandês", number: 23 },
+  { name: "Carlos Sainz", team: "Williams", nationality: "Espanhol", number: 55 },
+  { name: "Liam Lawson", team: "Racing Bulls", nationality: "Neozelandês", number: 30 },
+  { name: "Arvid Lindblad", team: "Racing Bulls", nationality: "Britânico", number: 41 }
+];
+
+const TEAMS = [
+  "Red Bull Racing", "Mercedes", "Ferrari", "McLaren",
+  "Aston Martin", "Alpine", "Haas", "Audi",
+  "Cadillac", "Williams", "Racing Bulls"
+];
+
+const QUIZ_QUESTIONS = [
+  { q: "Quem tem mais títulos mundiais na F1?", options: ["Lewis Hamilton", "Michael Schumacher", "Ayrton Senna", "Max Verstappen"], correct: 0 },
+  { q: "Qual país sediou a primeira corrida da história da F1 (1950)?", options: ["Itália", "França", "Reino Unido", "Alemanha"], correct: 2 },
+  { q: "Ayrton Senna conquistou quantos títulos mundiais?", options: ["1", "2", "3", "4"], correct: 2 },
+  { q: "Qual equipe tem mais títulos de construtores na F1?", options: ["Ferrari", "McLaren", "Mercedes", "Williams"], correct: 0 },
+  { q: "Quem foi o piloto mais jovem a vencer um GP de F1?", options: ["Sebastian Vettel", "Max Verstappen", "Lewis Hamilton", "Fernando Alonso"], correct: 1 },
+  { q: "Qual circuito é conhecido como 'Templo da Velocidade'?", options: ["Mônaco", "Monza", "Spa-Francorchamps", "Silverstone"], correct: 1 },
+  { q: "Em que ano Max Verstappen ganhou seu primeiro título?", options: ["2019", "2020", "2021", "2022"], correct: 2 },
+  { q: "Quantos pilotos brasileiros venceram o mundial de F1?", options: ["1", "2", "3", "4"], correct: 1 },
+  { q: "Qual equipe Michael Schumacher conquistou 5 títulos consecutivos?", options: ["Benetton", "Ferrari", "Mercedes", "McLaren"], correct: 1 },
+  { q: "Qual é a duração máxima de uma corrida de F1 (regra atual)?", options: ["1h30", "2h", "2h30", "3h"], correct: 1 },
+  { q: "Quantos pontos vale a vitória em um GP atualmente?", options: ["20", "23", "25", "26"], correct: 2 },
+  { q: "Qual piloto correu pela Ferrari, Mercedes e McLaren na carreira?", options: ["Alain Prost", "Niki Lauda", "Lewis Hamilton", "Sebastian Vettel"], correct: 1 }
+];
+
+let currentStage = 1;
+let stats = { attempts: 0, correct: 0, score: 0 };
+
+let currentPilot = null;
+let currentAttempt = 1;
+let roundOver = false;
+let usedPilotNames = [];
+let stage1Correct = 0;
+const MAX_ATTEMPTS = 4;
+const STAGE1_WINS_NEEDED = 2;
+
+const pilotInput = document.getElementById('pilotInput');
+const teamInput = document.getElementById('teamInput');
+const pilotAC = document.getElementById('pilotAutocomplete');
+const teamAC = document.getElementById('teamAutocomplete');
+const guessBtn = document.getElementById('guessBtn');
+const feedbackEl = document.getElementById('feedback');
+const resultEl = document.getElementById('resultContainer');
+const stage1Transition = document.getElementById('stage1Transition');
+const inputsContainer = document.getElementById('inputsContainer');
+const progressContainer = document.getElementById('progressContainer');
+const flagsOverlay = document.getElementById('flagsOverlay');
+
+function normalize(str) {
+  return String(str).toLowerCase().trim().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ");
+}
+function similarity(a, b) {
+  a = normalize(a); b = normalize(b);
+  if (a === b) return 1;
+  if (a.includes(b) || b.includes(a)) return 0.85;
+  const wa = a.split(" ").filter(w => w.length > 1);
+  const wb = b.split(" ").filter(w => w.length > 1);
+  let matches = 0;
+  wa.forEach(x => { if (wb.includes(x)) matches++; });
+  return matches / Math.max(wa.length, wb.length, 1);
+}
+function pickRandomPilot() {
+  let available = PILOTS.filter(p => !usedPilotNames.includes(p.name));
+  if (available.length === 0) { usedPilotNames = []; available = PILOTS.slice(); }
+  const p = available[Math.floor(Math.random() * available.length)];
+  usedPilotNames.push(p.name);
+  if (usedPilotNames.length > 10) usedPilotNames.shift();
+  return p;
+}
+
+function celebrateWin() {
+  flagsOverlay.innerHTML = '';
+  flagsOverlay.classList.add('show');
+  for (let i = 0; i < 10; i++) {
+    setTimeout(() => {
+      const flag = document.createElement('div');
+      flag.className = 'flag';
+      flag.style.top = (Math.random() * 60 + 10) + '%';
+      flag.style.animationDelay = (Math.random() * 0.4) + 's';
+      flag.style.animationDuration = (2.5 + Math.random() * 1.5) + 's';
+      flagsOverlay.appendChild(flag);
+    }, i * 120);
+  }
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const conf = document.createElement('div');
+      conf.className = 'confetti';
+      conf.style.left = Math.random() * 100 + '%';
+      conf.style.top = '-20px';
+      conf.style.background = Math.random() > 0.5 ? '#fff' : '#000';
+      conf.style.border = '1px solid ' + (Math.random() > 0.5 ? '#000' : '#fff');
+      conf.style.animationDuration = (2 + Math.random() * 2) + 's';
+      conf.style.animationDelay = (Math.random() * 0.5) + 's';
+      flagsOverlay.appendChild(conf);
+    }, i * 30);
+  }
+  const flash = document.createElement('div');
+  flash.className = 'success-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 1000);
+  setTimeout(() => {
+    flagsOverlay.classList.remove('show');
+    flagsOverlay.innerHTML = '';
+  }, 4500);
+}
+
+function setupAutocomplete(input, acEl, getList) {
+  input.addEventListener('input', () => {
+    const val = normalize(input.value);
+    if (!val) { acEl.classList.remove('show'); acEl.innerHTML = ''; return; }
+    const matches = getList().filter(item => normalize(item).includes(val) && normalize(item) !== val).slice(0, 6);
+    if (matches.length === 0) { acEl.classList.remove('show'); acEl.innerHTML = ''; return; }
+    acEl.innerHTML = matches.map(m => `<div class="autocomplete-item">${m}</div>`).join('');
+    acEl.classList.add('show');
+    acEl.querySelectorAll('.autocomplete-item').forEach(el => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        input.value = el.textContent;
+        acEl.classList.remove('show');
+        acEl.innerHTML = '';
+      });
+    });
+  });
+  input.addEventListener('blur', () => setTimeout(() => { acEl.classList.remove('show'); acEl.innerHTML = ''; }, 150));
+  input.addEventListener('focus', () => { if (input.value.trim()) input.dispatchEvent(new Event('input')); });
+}
+setupAutocomplete(pilotInput, pilotAC, () => PILOTS.map(p => p.name));
+setupAutocomplete(teamInput, teamAC, () => TEAMS);
+
+function updateStats() {
+  document.getElementById('statAttempts').textContent = stats.attempts;
+  document.getElementById('statCorrect').textContent = stats.correct;
+  document.getElementById('statScore').textContent = stats.score;
+}
+function updateProgress() {
+  const dots = progressContainer.querySelectorAll('.progress-dot');
+  dots.forEach((d, i) => {
+    d.classList.remove('active', 'wrong', 'correct');
+    if (i < currentAttempt - 1) d.classList.add('wrong');
+    else if (i === currentAttempt - 1 && !roundOver) d.classList.add('active');
+  });
+}
+function markDot(idx, state) {
+  const dots = progressContainer.querySelectorAll('.progress-dot');
+  if (dots[idx]) { dots[idx].classList.remove('active'); dots[idx].classList.add(state); }
+}
+function updateAttemptInfo() {
+  document.getElementById('currentAttempt').textContent = Math.min(currentAttempt, 4);
+}
+function clearFeedback() { feedbackEl.innerHTML = ''; }
+function addFeedback(type, title, text) {
+  const div = document.createElement('div');
+  div.className = 'feedback-card ' + type;
+  div.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-text">${text}</div>`;
+  feedbackEl.appendChild(div);
+}
+
+function startNewRound() {
+  currentPilot = pickRandomPilot();
+  currentAttempt = 1;
+  roundOver = false;
+  pilotInput.value = '';
+  teamInput.value = '';
+  pilotInput.disabled = false;
+  teamInput.disabled = false;
+  guessBtn.disabled = false;
+  guessBtn.textContent = '🏁 Enviar Palpite';
+  guessBtn.style.display = 'block';
+  inputsContainer.style.display = 'flex';
+  progressContainer.style.display = 'flex';
+  resultEl.classList.remove('show');
+  resultEl.innerHTML = '';
+  stage1Transition.classList.remove('show');
+  stage1Transition.innerHTML = '';
+  clearFeedback();
+  updateProgress();
+  updateAttemptInfo();
+  updateStats();
+  setTimeout(() => pilotInput.focus(), 100);
+}
+
+function makeGuess() {
+  if (roundOver) return;
+  const pGuess = pilotInput.value.trim();
+  const tGuess = teamInput.value.trim();
+  if (!pGuess || !tGuess) {
+    clearFeedback();
+    addFeedback('hint', '⚠️ Preencha os dois campos', 'Você precisa digitar o <strong>piloto</strong> E a <strong>equipe</strong>.');
+    return;
+  }
+  clearFeedback();
+  stats.attempts++;
+  updateStats();
+
+  const pCorrect = normalize(pGuess) === normalize(currentPilot.name);
+  const tCorrect = normalize(tGuess) === normalize(currentPilot.team);
+
+  if (pCorrect && tCorrect) {
+    markDot(currentAttempt - 1, 'correct');
+    roundOver = true;
+    stats.correct++;
+    stats.score += 100;
+    stage1Correct++;
+    updateStats();
+    celebrateWin();
+    showStage1Result(true);
+    return;
+  }
+
+  if (pCorrect) addFeedback('correct', '✅ Piloto Correto!', `Você acertou o piloto: <strong>${currentPilot.name}</strong>`);
+  else {
+    const sim = similarity(pGuess, currentPilot.name);
+    let dica = sim > 0.5 ? '🔥 Muito perto!' : sim > 0.2 ? '🌡️ Você está morno!' : '❄️ Longe!';
+    addFeedback('wrong', '❌ Piloto Errado', `"${pGuess}" não é o piloto. ${dica}`);
+  }
+
+  if (tCorrect) addFeedback('correct', '✅ Equipe Correta!', `A equipe é: <strong>${currentPilot.team}</strong>`);
+  else {
+    const sim = similarity(tGuess, currentPilot.team);
+    let dica = sim > 0.5 ? '🔥 Muito perto!' : sim > 0.2 ? '🌡️ Você está morno!' : '❄️ Longe!';
+    addFeedback('wrong', '❌ Equipe Errada', `"${tGuess}" não é a equipe. ${dica}`);
+  }
+
+  const hints = [];
+  if (!pCorrect && !tCorrect) hints.push(`Nacionalidade: <strong>${currentPilot.nationality}</strong>`);
+  else if (pCorrect && !tCorrect) hints.push(`A equipe começa com <strong>${currentPilot.team.charAt(0)}</strong>`);
+  else if (!pCorrect && tCorrect) hints.push(`O número do piloto é <strong>${currentPilot.number}</strong>`);
+  if (hints.length) addFeedback('hint', '💡 Dica', hints.join('<br>'));
+
+  markDot(currentAttempt - 1, (pCorrect || tCorrect) ? 'correct' : 'wrong');
+  currentAttempt++;
+
+  if (currentAttempt > MAX_ATTEMPTS) {
+    roundOver = true;
+    showStage1Result(false);
+    return;
+  }
+  updateProgress();
+  updateAttemptInfo();
+  if (!pCorrect) pilotInput.value = '';
+  if (!tCorrect) teamInput.value = '';
+  if (!pCorrect) pilotInput.focus(); else teamInput.focus();
+}
+
+function showStage1Result(won) {
+  inputsContainer.style.display = 'none';
+  guessBtn.style.display = 'none';
+  if (won) {
+    const canAdvance = stage1Correct >= STAGE1_WINS_NEEDED;
+    resultEl.innerHTML = `
+      <div class="result-emoji">🏆</div>
+      <div class="result-title win">Parabéns!</div>
+      <div class="result-text">Você acertou em <strong>${currentAttempt} tentativa(s)</strong>!<br>
+        <small style="color:#999">Progresso: ${stage1Correct}/${STAGE1_WINS_NEEDED}</small>
+      </div>
+      <div class="result-answer">
+        <div class="result-answer-label">🏁 Piloto</div>
+        <div class="result-answer-value">${currentPilot.name}</div>
+        <div class="result-answer-team">🏎️ ${currentPilot.team}</div>
+      </div>
+      <div class="result-details">
+        <div class="detail-chip">🌍 <strong>${currentPilot.nationality}</strong></div>
+        <div class="detail-chip">🔢 Número <strong>${currentPilot.number}</strong></div>
+      </div>
+      <button class="next-btn" id="nextBtn">${canAdvance ? 'Ir para Estágio 2 🏎️' : 'Próximo Piloto 🏁'}</button>
+    `;
+    resultEl.classList.add('show');
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (canAdvance) advanceToStage2(); else startNewRound();
+    });
+  } else {
+    resultEl.innerHTML = `
+      <div class="result-emoji">💨</div>
+      <div class="result-title lose">Fim de rodada</div>
+      <div class="result-text">Você usou todas as 4 tentativas. A resposta era:</div>
+      <div class="result-answer">
+        <div class="result-answer-label">🏁 Piloto</div>
+        <div class="result-answer-value">${currentPilot.name}</div>
+        <div class="result-answer-team">🏎️ ${currentPilot.team}</div>
+      </div>
+      <div class="result-details">
+        <div class="detail-chip">🌍 <strong>${currentPilot.nationality}</strong></div>
+        <div class="detail-chip">🔢 Número <strong>${currentPilot.number}</strong></div>
+      </div>
+      <div class="result-text" style="font-size:0.9rem;color:#999">Progresso: ${stage1Correct}/${STAGE1_WINS_NEEDED}</div>
+      <button class="next-btn" id="nextBtn">Tentar Outro Piloto 🔄</button>
+    `;
+    resultEl.classList.add('show');
+    document.getElementById('nextBtn').addEventListener('click', startNewRound);
+  }
+}
+
+function updateStageChips() {
+  document.querySelectorAll('.stage-chip').forEach(c => c.classList.remove('active', 'done'));
+  if (currentStage >= 1) document.getElementById('chip1').classList.add(currentStage > 1 ? 'done' : 'active');
+  if (currentStage >= 2) document.getElementById('chip2').classList.add(currentStage > 2 ? 'done' : 'active');
+  if (currentStage >= 3) document.getElementById('chip3').classList.add('active');
+}
+
+function advanceToStage2() {
+  currentStage = 2;
+  updateStageChips();
+  inputsContainer.style.display = 'none';
+  guessBtn.style.display = 'none';
+  resultEl.classList.remove('show');
+  resultEl.innerHTML = '';
+  progressContainer.style.display = 'none';
+  clearFeedback();
+  stage1Transition.innerHTML = `
+    <div class="phase-transition-emoji">🏎️</div>
+    <div class="phase-transition-title">Estágio 2 Desbloqueado!</div>
+    <div class="phase-transition-text">
+      Você dominou os pilotos!<br>
+      Agora vamos para a <strong style="color:#ff6b00">CORRIDA DE REFLEXO</strong>.<br>
+      Desvie dos cones e chegue ao fim!
+    </div>
+    <button class="next-btn" id="startStage2Btn">Começar Corrida 🏁</button>
+  `;
+  stage1Transition.classList.add('show');
+  document.getElementById('startStage2Btn').addEventListener('click', () => {
+    document.getElementById('stage1').style.display = 'none';
+    document.getElementById('stage2').style.display = 'block';
+    initRaceGame();
+  });
+}
+
+function advanceToStage3() {
+  currentStage = 3;
+  updateStageChips();
+  document.getElementById('stage2').style.display = 'none';
+  document.getElementById('stage3').style.display = 'block';
+  startQuickQuiz();
+}
+
+/* ============ ESTÁGIO 2: CORRIDA ============ */
+let raceState = null;
+let raceAnimationId = null;
+
+function initRaceGame() {
+  const canvas = document.getElementById('raceCanvas');
+  const ctx = canvas.getContext('2d');
+  const overlay = document.getElementById('raceOverlay');
+  const overlayTitle = document.getElementById('raceOverlayTitle');
+  const overlayText = document.getElementById('raceOverlayText');
+  const startBtn = document.getElementById('raceStartBtn');
+
+  const W = canvas.width;
+  const H = canvas.height;
+
+  overlayTitle.textContent = '🏎️ Corrida de Reflexo';
+  overlayText.innerHTML = 'Use as <strong>setas ← →</strong> ou o <strong>mouse</strong> para desviar dos cones e chegar à linha de chegada!<br>Você tem <strong>3 vidas</strong>.';
+  startBtn.textContent = '🏁 Iniciar Corrida';
+  overlay.classList.add('show');
+
+  const newGame = () => {
+    raceState = {
+      player: { x: W / 2 - 22, y: H - 100, w: 44, h: 70, speed: 7 },
+      obstacles: [],
+      pickups: [],
+      stars: [],
+      distance: 0,
+      lives: 3,
+      score: 0,
+      speed: 4,
+      frame: 0,
+      keys: { left: false, right: false },
+      running: true,
+      targetDistance: 3000,
+      gameOver: false,
+      won: false
+    };
+    for (let i = 0; i < 80; i++) {
+      raceState.stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        size: Math.random() * 2 + 0.5,
+        speed: Math.random() * 2 + 0.5
+      });
+    }
+  };
+
+  const spawnObstacle = () => {
+    const w = 40 + Math.random() * 30;
+    raceState.obstacles.push({
+      x: Math.random() * (W - w),
+      y: -60,
+      w: w,
+      h: 55,
+      hit: false
+    });
+  };
+
+  const spawnPickup = () => {
+    raceState.pickups.push({
+      x: Math.random() * (W - 30),
+      y: -40,
+      w: 30,
+      h: 30,
+      collected: false
+    });
+  };
+
+  const update = () => {
+    const s = raceState;
+    if (!s.running) return;
+    s.frame++;
+    s.distance += s.speed;
+    s.speed = 4 + Math.floor(s.distance / 500);
+
+    s.stars.forEach(star => {
+      star.y += star.speed;
+      if (star.y > H) { star.y = 0; star.x = Math.random() * W; }
+    });
+
+    if (s.keys.left) s.player.x -= s.player.speed;
+    if (s.keys.right) s.player.x += s.player.speed;
+    if (s.player.x < 20) s.player.x = 20;
+    if (s.player.x > W - s.player.w - 20) s.player.x = W - s.player.w - 20;
+
+    if (s.frame % 45 === 0) spawnObstacle();
+    if (s.frame % 130 === 0) spawnPickup();
+
+    for (let i = s.obstacles.length - 1; i >= 0; i--) {
+      const o = s.obstacles[i];
+      o.y += s.speed;
+      if (o.y > H) { s.obstacles.splice(i, 1); continue; }
+      if (!o.hit &&
+          s.player.x < o.x + o.w &&
+          s.player.x + s.player.w > o.x &&
+          s.player.y < o.y + o.h &&
+          s.player.y + s.player.h > o.y) {
+        o.hit = true;
+        s.lives--;
+        s.player.x = W / 2 - 22;
+        if (s.lives <= 0) { s.running = false; s.gameOver = true; showRaceEnd(false); }
+      }
+    }
+
+    for (let i = s.pickups.length - 1; i >= 0; i--) {
+      const p = s.pickups[i];
+      p.y += s.speed;
+      if (p.y > H) { s.pickups.splice(i, 1); continue; }
+      if (!p.collected &&
+          s.player.x < p.x + p.w &&
+          s.player.x + s.player.w > p.x &&
+          s.player.y < p.y + p.h &&
+          s.player.y + s.player.h > p.y) {
+        p.collected = true;
+        s.score += 50;
+        s.pickups.splice(i, 1);
+      }
+    }
+
+    if (s.distance >= s.targetDistance) {
+      s.running = false;
+      s.won = true;
+      showRaceEnd(true);
+    }
+  };
+
+  // ===== DESENHAR F1 VISTO DE CIMA =====
+  const drawF1Car = (x, y, w, h) => {
+    const cx = x + w / 2;
+    const top = y;
+    const bottom = y + h;
+
+    // ====== SOMBRA ======
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath();
+    ctx.ellipse(cx + 2, y + h * 0.55 + 3, w * 0.55, h * 0.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ====== RODAS TRASEIRAS (mais largas) ======
+    ctx.fillStyle = '#0a0a0a';
+    // Traseira esquerda
+    ctx.fillRect(x - 2, bottom - 24, 12, 22);
+    // Traseira direita
+    ctx.fillRect(x + w - 10, bottom - 24, 12, 22);
+    // Detalhes das rodas traseiras
+    ctx.fillStyle = '#222';
+    ctx.fillRect(x, bottom - 22, 8, 18);
+    ctx.fillRect(x + w - 8, bottom - 22, 8, 18);
+
+    // ====== RODAS DIANTEIRAS ======
+    ctx.fillStyle = '#0a0a0a';
+    // Dianteira esquerda
+    ctx.fillRect(x - 1, top + 12, 10, 18);
+    // Dianteira direita
+    ctx.fillRect(x + w - 9, top + 12, 10, 18);
+    // Detalhes
+    ctx.fillStyle = '#222';
+    ctx.fillRect(x + 1, top + 14, 6, 14);
+    ctx.fillRect(x + w - 7, top + 14, 6, 14);
+
+    // ====== CORPO PRINCIPAL (formato de F1) ======
+    ctx.fillStyle = '#e10600';
+    ctx.beginPath();
+    // Bico dianteiro (fino e pontudo)
+    ctx.moveTo(cx, top);
+    ctx.lineTo(cx + 5, top + 8);
+    ctx.lineTo(cx + 7, top + 15);
+    ctx.lineTo(cx + 10, top + 22);
+    // Lateral direita - cockpit largo
+    ctx.lineTo(cx + 14, top + 30);
+    ctx.lineTo(cx + 14, top + 42);
+    // Sidepod direito
+    ctx.lineTo(cx + 16, top + 45);
+    ctx.lineTo(cx + 15, top + 55);
+    // Traseira direita
+    ctx.lineTo(cx + 12, top + 62);
+    ctx.lineTo(cx + 8, top + 68);
+    ctx.lineTo(cx + 5, bottom);
+    // Traseira esquerda
+    ctx.lineTo(cx - 5, bottom);
+    ctx.lineTo(cx - 8, top + 68);
+    ctx.lineTo(cx - 12, top + 62);
+    // Traseira esquerda
+    ctx.lineTo(cx - 15, top + 55);
+    ctx.lineTo(cx - 16, top + 45);
+    // Sidepod esquerdo
+    ctx.lineTo(cx - 14, top + 42);
+    ctx.lineTo(cx - 14, top + 30);
+    // Lateral esquerda - cockpit
+    ctx.lineTo(cx - 10, top + 22);
+    ctx.lineTo(cx - 7, top + 15);
+    ctx.lineTo(cx - 5, top + 8);
+    ctx.closePath();
+    ctx.fill();
+
+    // ====== DETALHES: Assoalho / sombra embaixo do carro ======
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.beginPath();
+    ctx.moveTo(cx - 12, top + 45);
+    ctx.lineTo(cx + 12, top + 45);
+    ctx.lineTo(cx + 10, top + 62);
+    ctx.lineTo(cx - 10, top + 62);
+    ctx.closePath();
+    ctx.fill();
+
+    // ====== ASAS LATERAIS (sidepods) mais escuras ======
+    ctx.fillStyle = '#a80400';
+    // Sidepod esquerdo
+    ctx.beginPath();
+    ctx.moveTo(cx - 16, top + 45);
+    ctx.lineTo(cx - 10, top + 43);
+    ctx.lineTo(cx - 10, top + 58);
+    ctx.lineTo(cx - 15, top + 55);
+    ctx.closePath();
+    ctx.fill();
+    // Sidepod direito
+    ctx.beginPath();
+    ctx.moveTo(cx + 16, top + 45);
+    ctx.lineTo(cx + 10, top + 43);
+    ctx.lineTo(cx + 10, top + 58);
+    ctx.lineTo(cx + 15, top + 55);
+    ctx.closePath();
+    ctx.fill();
+
+    // ====== COCKPIT (abertura do piloto) ======
+    // Base preta
+    ctx.fillStyle = '#1a1a1a';
+    ctx.beginPath();
+    ctx.ellipse(cx, top + 34, 8, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Halo (aro de proteção)
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.ellipse(cx, top + 34, 7, 10, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    // Capacete do piloto (visível de cima)
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(cx, top + 34, 5, 0, Math.PI * 2);
+    ctx.fill();
+    // Detalhe do capacete (listra)
+    ctx.fillStyle = '#e10600';
+    ctx.fillRect(cx - 5, top + 33, 10, 2);
+
+    // ====== BICO (detalhe aerodinâmico) ======
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(cx - 1, top + 5, 2, 10);
+
+    // ====== AIRBOX (entrada de ar atrás do cockpit) ======
+    ctx.fillStyle = '#0a0a0a';
+    ctx.beginPath();
+    ctx.ellipse(cx, top + 50, 5, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Detalhe amarelo/vermelho da airbox
+    ctx.fillStyle = '#ffb800';
+    ctx.fillRect(cx - 3, top + 47, 6, 2);
+
+    // ====== ASA TRASEIRA (wing) ======
+    // Suporte (pilar)
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(cx - 2, top + 62, 4, 8);
+    // Asa traseira principal (barra horizontal)
+    ctx.fillStyle = '#e10600';
+    ctx.fillRect(cx - 16, top + 66, 32, 6);
+    // Detalhe superior da asa
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(cx - 16, top + 66, 32, 2);
+    // Endplates (laterais da asa traseira)
+    ctx.fillStyle = '#a80400';
+    ctx.fillRect(cx - 18, top + 64, 3, 10);
+    ctx.fillRect(cx + 15, top + 64, 3, 10);
+
+    // ====== DRS (detalhe aerodinâmico) ======
+    ctx.fillStyle = '#ffb800';
+    ctx.fillRect(cx - 10, top + 67, 20, 1);
+
+    // ====== LOGO/SPONSOR (faixa lateral) ======
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(cx - 14, top + 20, 28, 3);
+
+    // ====== ASAS DIANTEIRAS ======
+    ctx.fillStyle = '#a80400';
+    // Suporte dianteiro esquerdo
+    ctx.fillRect(cx - 12, top + 20, 4, 6);
+    // Suporte dianteiro direito
+    ctx.fillRect(cx + 8, top + 20, 4, 6);
+    // Aleta dianteira esquerda
+    ctx.fillStyle = '#e10600';
+    ctx.fillRect(x + 2, top + 18, 12, 3);
+    // Aleta dianteira direita
+    ctx.fillRect(x + w - 14, top + 18, 12, 3);
+  };
+
+  const draw = () => {
+    const s = raceState;
+    if (!s) return;
+
+    // ===== FUNDO: ASFALTO ESCURO =====
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, W, H);
+
+    // ===== TEXTURA DO ASFALTO (ruído sutil) =====
+    ctx.fillStyle = 'rgba(255,255,255,0.02)';
+    for (let i = 0; i < 30; i++) {
+      const y = ((i * 100 + s.distance * 0.5) % H);
+      ctx.fillRect(0, y, W, 1);
+    }
+
+    // ===== GRAMA / ÁREA EXTERNA =====
+    const trackLeft = 20;
+    const trackRight = W - 20;
+    // Faixa de grama esquerda
+    ctx.fillStyle = '#1a3a1a';
+    ctx.fillRect(0, 0, trackLeft, H);
+    // Faixa de grama direita
+    ctx.fillRect(trackRight, 0, 20, H);
+
+    // ===== PISTA =====
+    ctx.fillStyle = '#2a2a2a';
+    ctx.fillRect(trackLeft, 0, trackRight - trackLeft, H);
+
+    // ===== BORDAS BRANCAS (linhas laterais) =====
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(trackLeft - 2, 0, 4, H);
+    ctx.fillRect(trackRight - 2, 0, 4, H);
+
+    // ===== ZEBRAS (bordas vermelhas e brancas) =====
+    const zebraSize = 30;
+    const zebraOffset = s.distance % (zebraSize * 2);
+    for (let y = -zebraSize * 2; y < H + zebraSize; y += zebraSize * 2) {
+      // Vermelho esquerda
+      ctx.fillStyle = '#e10600';
+      ctx.fillRect(trackLeft - 8, y + zebraOffset, 6, zebraSize);
+      // Branco esquerda
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(trackLeft - 8, y + zebraOffset + zebraSize, 6, zebraSize);
+      // Vermelho direita
+      ctx.fillStyle = '#e10600';
+      ctx.fillRect(trackRight + 2, y + zebraOffset, 6, zebraSize);
+      // Branco direita
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(trackRight + 2, y + zebraOffset + zebraSize, 6, zebraSize);
+    }
+
+    // ===== LINHA CENTRAL TRACEJADA =====
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    const dashSize = 40;
+    const dashOffset = s.distance % (dashSize * 2);
+    for (let y = -dashSize * 2; y < H + dashSize; y += dashSize * 2) {
+      ctx.fillRect(W / 2 - 2, y + dashOffset, 4, dashSize);
+    }
+
+    // ===== LINHA DE CHEGADA (xadrez) =====
+    const finishY = 50 + (s.targetDistance - s.distance) * 0.15;
+    if (finishY > -100 && finishY < H + 100) {
+      const sqSize = 15;
+      for (let i = 0; i < (trackRight - trackLeft) / sqSize; i++) {
+        for (let j = 0; j < 2; j++) {
+          ctx.fillStyle = ((i + j) % 2 === 0) ? '#fff' : '#000';
+          ctx.fillRect(trackLeft + i * sqSize, finishY + j * sqSize, sqSize, sqSize);
+        }
+      }
+    }
+
+    // ===== BARRA DE PROGRESSO =====
+    const progress = Math.min(s.distance / s.targetDistance, 1);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, 10);
+    ctx.fillStyle = '#00d26a';
+    ctx.fillRect(0, 0, W * progress, 10);
+    // Marcador de progresso
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(W * progress - 1, 0, 2, 10);
+
+    // ===== CONES =====
+    s.obstacles.forEach(o => {
+      // Sombra
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.beginPath();
+      ctx.ellipse(o.x + o.w / 2 + 2, o.y + o.h - 3, o.w / 2, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Base do cone (quadrado)
+      ctx.fillStyle = o.hit ? '#333' : '#0a0a0a';
+      ctx.fillRect(o.x, o.y + o.h - 10, o.w, 10);
+
+      // Corpo do cone (triângulo)
+      ctx.fillStyle = o.hit ? '#555' : '#e10600';
+      ctx.beginPath();
+      ctx.moveTo(o.x + o.w / 2, o.y);
+      ctx.lineTo(o.x + o.w - 5, o.y + o.h - 10);
+      ctx.lineTo(o.x + 5, o.y + o.h - 10);
+      ctx.closePath();
+      ctx.fill();
+
+      // Listra branca reflexiva
+      ctx.fillStyle = o.hit ? '#888' : '#fff';
+      ctx.beginPath();
+      ctx.moveTo(o.x + o.w * 0.28, o.y + o.h * 0.4);
+      ctx.lineTo(o.x + o.w * 0.72, o.y + o.h * 0.4);
+      ctx.lineTo(o.x + o.w * 0.68, o.y + o.h * 0.5);
+      ctx.lineTo(o.x + o.w * 0.32, o.y + o.h * 0.5);
+      ctx.closePath();
+      ctx.fill();
+
+      // Topo do cone
+      ctx.fillStyle = o.hit ? '#666' : '#a80400';
+      ctx.beginPath();
+      ctx.arc(o.x + o.w / 2, o.y + 3, 3, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // ===== TROFÉUS =====
+    s.pickups.forEach(p => {
+      ctx.font = '30px Arial';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = '#ffb800';
+      ctx.shadowBlur = 15;
+      ctx.fillText('🏆', p.x + p.w / 2, p.y + p.h - 5);
+      ctx.shadowBlur = 0;
+    });
+
+    // ===== CARRO DO JOGADOR =====
+    drawF1Car(s.player.x, s.player.y, s.player.w, s.player.h);
+
+    // ===== VIAS (corações) =====
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#fff';
+    for (let i = 0; i < s.lives; i++) {
+      ctx.fillText('❤️', 10 + i * 30, H - 15);
+    }
+
+    // ===== PONTOS =====
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 20px Arial';
+    ctx.shadowColor = '#000';
+    ctx.shadowBlur = 6;
+    ctx.fillText('PONTOS: ' + s.score, W - 15, H - 15);
+    ctx.shadowBlur = 0;
+
+    // ===== VELOCIDADE =====
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#e10600';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText('VEL: ' + s.speed + 'x', W - 15, 30);
+  };
+
+  const loop = () => {
+    if (raceState && raceState.running) {
+      update();
+      draw();
+      raceAnimationId = requestAnimationFrame(loop);
+    } else if (raceState) {
+      draw();
+    }
+  };
+
+  const showRaceEnd = (won) => {
+    stats.score += raceState.score;
+    updateStats();
+    overlayTitle.textContent = won ? '🏆 Vitória!' : '💥 Fim de Corrida';
+    overlayText.innerHTML = won
+      ? `Você chegou ao fim com <strong>${raceState.lives} vida(s)</strong> restante(s)!<br>Pontos ganhos: <strong>${raceState.score}</strong>`
+      : `Você bateu nos cones 3 vezes.<br>Pontos ganhos: <strong>${raceState.score}</strong>`;
+    startBtn.textContent = 'Continuar para o Quiz ⚡';
+    startBtn.onclick = () => {
+      overlay.classList.remove('show');
+      if (raceAnimationId) cancelAnimationFrame(raceAnimationId);
+      advanceToStage3();
+    };
+    overlay.classList.add('show');
+  };
+
+  const keyDown = (e) => {
+    if (!raceState) return;
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') { raceState.keys.left = true; e.preventDefault(); }
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { raceState.keys.right = true; e.preventDefault(); }
+  };
+  const keyUp = (e) => {
+    if (!raceState) return;
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') raceState.keys.left = false;
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') raceState.keys.right = false;
+  };
+  window.removeEventListener('keydown', keyDown);
+  window.removeEventListener('keyup', keyUp);
+  window.addEventListener('keydown', keyDown);
+  window.addEventListener('keyup', keyUp);
+
+  const onMouseMove = (e) => {
+    if (!raceState || !raceState.running) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const x = (e.clientX - rect.left) * scaleX;
+    raceState.player.x = x - raceState.player.w / 2;
+    if (raceState.player.x < 20) raceState.player.x = 20;
+    if (raceState.player.x > W - raceState.player.w - 20) raceState.player.x = W - raceState.player.w - 20;
+  };
+  const onTouchMove = (e) => {
+    e.preventDefault();
+    if (!raceState || !raceState.running) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const touch = e.touches[0];
+    const x = (touch.clientX - rect.left) * scaleX;
+    raceState.player.x = x - raceState.player.w / 2;
+    if (raceState.player.x < 20) raceState.player.x = 20;
+    if (raceState.player.x > W - raceState.player.w - 20) raceState.player.x = W - raceState.player.w - 20;
+  };
+
+  canvas.addEventListener('mousemove', onMouseMove);
+  canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  startBtn.onclick = () => {
+    overlay.classList.remove('show');
+    newGame();
+    if (raceAnimationId) cancelAnimationFrame(raceAnimationId);
+    loop();
+  };
+}
+
+/* ============ ESTÁGIO 3: QUIZ ============ */
+let quizState = null;
+let quizTimerInterval = null;
+
+function startQuickQuiz() {
+  const shuffled = [...QUIZ_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5);
+  quizState = { questions: shuffled, current: 0, correct: 0, timeLeft: 15, answered: false };
+  updateQuizUI();
+}
+
+function startQuizTimer() {
+  if (quizTimerInterval) clearInterval(quizTimerInterval);
+  const timerEl = document.getElementById('quizTimer');
+  timerEl.classList.remove('warning', 'danger');
+  quizTimerInterval = setInterval(() => {
+    if (!quizState || quizState.answered) return;
+    quizState.timeLeft--;
+    timerEl.textContent = quizState.timeLeft;
+    if (quizState.timeLeft <= 5) timerEl.classList.add('danger');
+    else if (quizState.timeLeft <= 10) timerEl.classList.add('warning');
+    if (quizState.timeLeft <= 0) {
+      clearInterval(quizTimerInterval);
+      quizState.answered = true;
+      handleQuizAnswer(-1);
+    }
+  }, 1000);
+}
+
+function updateQuizUI() {
+  const q = quizState.questions[quizState.current];
+  document.getElementById('quizQuestion').textContent = q.q;
+  document.getElementById('quizCurrent').textContent = quizState.current + 1;
+  document.getElementById('quizScore').textContent = quizState.correct;
+  document.getElementById('quizTimer').textContent = quizState.timeLeft;
+  document.getElementById('quizFeedback').innerHTML = '';
+
+  const optsEl = document.getElementById('quizOptions');
+  optsEl.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      if (quizState.answered) return;
+      quizState.answered = true;
+      handleQuizAnswer(i);
+    });
+    optsEl.appendChild(btn);
+  });
+
+  quizState.answered = false;
+  quizState.timeLeft = 15;
+  document.getElementById('quizTimer').textContent = 15;
+  document.getElementById('quizTimer').classList.remove('warning', 'danger');
+  startQuizTimer();
+}
+
+function handleQuizAnswer(selected) {
+  if (quizTimerInterval) clearInterval(quizTimerInterval);
+  const q = quizState.questions[quizState.current];
+  const buttons = document.querySelectorAll('#quizOptions .quiz-option');
+  const fbEl = document.getElementById('quizFeedback');
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === selected) btn.classList.add('wrong');
+  });
+  const isCorrect = selected === q.correct;
+  if (isCorrect) {
+    quizState.correct++;
+    stats.correct++;
+    stats.score += 100;
+    document.getElementById('quizScore').textContent = quizState.correct;
+    fbEl.innerHTML = `<div class="feedback-card correct"><div class="feedback-title">✅ Correto! +100 pontos</div></div>`;
+  } else if (selected === -1) {
+    fbEl.innerHTML = `<div class="feedback-card wrong"><div class="feedback-title">⏰ Tempo esgotado!</div><div class="feedback-text">A resposta era: <strong>${q.options[q.correct]}</strong></div></div>`;
+  } else {
+    fbEl.innerHTML = `<div class="feedback-card wrong"><div class="feedback-title">❌ Errado!</div><div class="feedback-text">A resposta era: <strong>${q.options[q.correct]}</strong></div></div>`;
+  }
+  stats.attempts++;
+  updateStats();
+  setTimeout(() => {
+    quizState.current++;
+    if (quizState.current >= quizState.questions.length) showQuizResult();
+    else updateQuizUI();
+  }, 1800);
+}
+
+function showQuizResult() {
+  const qc = document.getElementById('quizQuestion');
+  const optsEl = document.getElementById('quizOptions');
+  const resultEl = document.getElementById('quizResult');
+  const timerEl = document.getElementById('quizTimer');
+  qc.style.display = 'none';
+  optsEl.style.display = 'none';
+  timerEl.style.display = 'none';
+  document.getElementById('quizFeedback').innerHTML = '';
+  const won = quizState.correct >= 3;
+  if (won) {
+    celebrateWin();
+    stats.score += 500;
+    updateStats();
+    resultEl.innerHTML = `
+      <div class="result-emoji">🏆</div>
+      <div class="result-title win">CAMPEÃO MUNDIAL!</div>
+      <div class="result-text">Você acertou <strong>${quizState.correct}/5</strong> perguntas!<br>Parabéns, você é um verdadeiro fã de Fórmula 1! 🏁</div>
+      <div class="result-answer">
+        <div class="result-answer-label">🏆 Pontuação Total</div>
+        <div class="result-answer-value">${stats.score} pontos</div>
+      </div>
+      <div class="result-details">
+        <div class="detail-chip">🎯 <strong>${stats.correct}</strong> acertos</div>
+        <div class="detail-chip">📝 <strong>${stats.attempts}</strong> tentativas</div>
+      </div>
+      <button class="next-btn" id="restartBtn">Jogar Novamente 🔄</button>
+    `;
+  } else {
+    resultEl.innerHTML = `
+      <div class="result-emoji">💨</div>
+      <div class="result-title lose">Quase lá!</div>
+      <div class="result-text">Você acertou <strong>${quizState.correct}/5</strong> perguntas.<br>Precisa de 3 acertos para ser campeão.</div>
+      <div class="result-details">
+        <div class="detail-chip">🎯 <strong>${stats.correct}</strong> acertos totais</div>
+        <div class="detail-chip">💯 <strong>${stats.score}</strong> pontos</div>
+      </div>
+      <button class="next-btn" id="restartBtn">Tentar Novamente 🔄</button>
+    `;
+  }
+  resultEl.classList.add('show');
+  document.getElementById('restartBtn').addEventListener('click', resetFullGame);
+}
+
+function resetFullGame() {
+  currentStage = 1;
+  stats = { attempts: 0, correct: 0, score: 0 };
+  stage1Correct = 0;
+  usedPilotNames = [];
+  document.getElementById('quizResult').classList.remove('show');
+  document.getElementById('quizResult').innerHTML = '';
+  document.getElementById('quizQuestion').style.display = 'block';
+  document.getElementById('quizOptions').style.display = 'grid';
+  document.getElementById('quizTimer').style.display = 'block';
+  document.getElementById('stage1').style.display = 'block';
+  document.getElementById('stage2').style.display = 'none';
+  document.getElementById('stage3').style.display = 'none';
+  updateStageChips();
+  updateStats();
+  startNewRound();
+}
+
+guessBtn.addEventListener('click', makeGuess);
+pilotInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); teamInput.focus(); } });
+teamInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); makeGuess(); } });
+
+updateStageChips();
+updateStats();
+startNewRound();
+</script>
+
+</body>
+</html>
